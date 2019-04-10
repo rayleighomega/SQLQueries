@@ -4,34 +4,34 @@ use usairlineflights2;
 select count(flightID) as Count_Register from flights;
 
 /*2*/
-select sum(ArrDelay) / count(flightID) as Average_Delay_Arrivals,
-sum(DepDelay) / count(DepDelay) as Average_Delay_Departures from flights;
+select Origin, sum(ArrDelay) / count(flightID) as prom_arrivades,
+sum(DepDelay) / count(DepDelay) as prom_sortides from flights group by Origin;
 
 /*3*/
-select Origin, colYear as Year, colMonth as "Month", AVG(ArrDelay) as 'AVG Delay'
-from flights where Origin = 'LAX' group by Origin, colYear, colMonth;
+select Origin, colYear as Year, colMonth as Month, AVG(ArrDelay) as prom_arrivadas
+from flights group by Origin, colYear, colMonth;
 
 /*4*/
-select City, colYear as Year, colMonth as "Month", AVG(ArrDelay) as 'AVG Delay'
+select City, colYear as Year, colMonth as Month, AVG(ArrDelay) as prom_arrivades
 from flights
 inner join usairports on usairports.IATA = flights.Origin
 group by City, colYear, colMonth;
 
 /*5*/
-select Description as Carriers, sum(Cancelled) as Cancelled
+select CarrierCode as UniqueCarrier, colYear, AVG(ArrDelay) as avg_delay, sum(Cancelled) as total_cancelled
 from carriers
 inner join flights on flights.uniqueCarrier = carriers.CarrierCode
-group by Carriers order by Cancelled desc;
+group by UniqueCarrier order by total_cancelled desc;
 
 /*6*/
-select TailNum, Distance
+select TailNum, sum(Distance) as Distance
 from flights
-group by TailNum order by Distance desc;
+group by TailNum having TailNum <> "NA" order by Distance desc limit 10;
 
 /*7*/
-select CarrierCode as Carriers, AVG(ArrDelay) as Delay
+select CarrierCode as UniqueCarrier, AVG(ArrDelay) as avgDelay
 from carriers
 inner join flights on flights.uniqueCarrier = carriers.CarrierCode
-group by Carriers order by Delay desc;
+group by UniqueCarrier having avgDelay > 10 order by avgDelay desc;
 
 select * from flights
